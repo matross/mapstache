@@ -44,9 +44,9 @@
          (if (= (.indexOf @lookups lookup-key) -1)
            (do
              (swap! lookups #(conj %1 lookup-key))
-             (let [ret (render renderer v root)]
-               (swap! lookups #(pop %1))
-               ret))
+             (try
+               (render renderer v root)
+               (finally (swap! lookups #(pop %1)))))
            (throw
             (IllegalArgumentException.
              (circular-path-message (conj @lookups lookup-key))))))
