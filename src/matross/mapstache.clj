@@ -42,9 +42,9 @@
        (instance? String v)
        (if (= (.indexOf @lookups lookup-key) -1)
          (try
-           (swap! lookups #(conj %1 lookup-key))
+           (swap! lookups conj lookup-key)
            (render renderer v root)
-           (finally (swap! lookups #(pop %1))))
+           (finally (swap! lookups pop)))
          (let [message (circular-path-message (conj @lookups lookup-key))]
            (throw (IllegalArgumentException. message))))
 
@@ -84,7 +84,7 @@
   (without [this k]
     (let [new-value (if (empty? cursor)
                       (dissoc value k)
-                      (update-in value cursor #(dissoc k)))]
+                      (update-in value cursor dissoc k))]
       (mapstache renderer new-value cursor lookups root)))
 
   Iterable
