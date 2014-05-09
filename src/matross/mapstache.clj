@@ -53,7 +53,7 @@
   IFn
   (invoke [this k] (.valAt this k))
   (invoke [this k not-found] (.valAt this k not-found))
-  (toString [this] (str [value cursor lookups root]))
+  (toString [this] (str [value cursor lookups]))
 
   Seqable
   (seq [this]

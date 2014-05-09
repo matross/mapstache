@@ -96,4 +96,9 @@
 
   (testing "vectors get templated"
     (let [ms (mustached {:x "value" :y ["{{x}}" "value"]})]
-      (is (= (:y ms) ["value" "value"])))))
+      (is (= (:y ms) ["value" "value"]))))
+
+  (testing "toString doesn't blow out the stack"
+    (let [ms (mustached {:x "{{y}}" :y {:a :b}})]
+      (is (not (empty? (str (:x ms)))))))
+)
