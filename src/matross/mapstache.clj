@@ -56,6 +56,7 @@
   (invoke [this k] (.valAt this k))
   (invoke [this k not-found] (.valAt this k not-found))
   (toString [this] (str [value cursor lookups root]))
+
   Seqable
   (seq [this]
     (map (fn [k] (MapEntry. k (.valAt this k))) (keys (get-in value cursor))))
