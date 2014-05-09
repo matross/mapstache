@@ -1,11 +1,19 @@
 (ns mapstache.core-test
   (:require [clojure.test :refer :all]
-            [mapstache.core :refer :all])
+            [mapstache.core :refer :all]
+            [clostache.parser :as mustache])
   (:import mapstache.core.Mapstache
            clojure.lang.MapEntry))
 
 (defn matching-maps [m]
   [m (mapstache (reify IRender (render [_ s d] s)) m)])
+
+(defn mustached [m]
+  (mapstache
+   (reify IRender
+     (render [_ s d] (mustache/render s d)))
+   m
+))
 
 (deftest behaves-like-a-map
   (testing "I can query it with a keyword."
@@ -50,7 +58,23 @@
     (let [[m ms] (matching-maps {:a {:b "value"}})]
       (is (instance? Mapstache (:a ms)))
       (is (= (:a ms) (:a m)))))
+
   (testing "Strings get templated"
-    (let [ms (mapstache (reify IRender (render [_ s d] 42)) {:a "{{ str }}"})]
+    (let [ms (mapstache (reify IRender (render [_ s d] 42)) {:a "{{str}}"})]
       (is (= (:a ms) 42))))
-)
+
+  (testing "A real template example"
+      (let [ms (mustached {:a "{{str}}" :str "value"})]
+        (is (= (:a ms) "value"))))
+
+  (testing "Sub map templating works"
+    (let [ms (mustached {:a "{{b.str}}" :b {:str "value"}})]
+        (is (= (:a ms) "value"))))
+
+  (testing "Recursive key lookups throws an exception"
+    (let [ms (mustached {:a "{{b.c}}" :b {:c "{{a}}"}})]
+        (is (thrown? IllegalArgumentException (:a ms) "value"))))
+
+  (testing "vectors get templated"
+    (let [ms (mustached {:x "value" :y ["{{x}}" "value"]})]
+      (is (= (:y ms) ["value" "value"])))))

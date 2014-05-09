@@ -12,6 +12,13 @@
 
 (defprotocol IRender (render [_ str data]))
 
+(defn circular-path-message [p]
+  (str "Circular key lookup: "
+       (->> p
+            (map (fn [path] (map name path)))
+            (map (fn [path] (clojure.string/join "." path)))
+            (clojure.string/join " -> "))))
+
 (deftype Mapstache [^mapstache.core.IRender renderer
                     ^IPersistentMap value
                     ^IPersistentVector cursor
@@ -21,10 +28,28 @@
   (valAt [this k] (.valAt this k nil))
   (valAt [this k not-found]
     (let [lookup-key (conj cursor k)
-          v (get-in value (conj cursor k) not-found)]
+          v (get-in value (conj cursor k) not-found)
+          root (or root this)]
       (cond
-       (instance? IPersistentMap v) (mapstache renderer value lookup-key lookups root)
-       (instance? String v) (render renderer v (or root this))
+       (instance? IPersistentMap v)
+       (mapstache renderer value lookup-key lookups root)
+
+       (instance? IPersistentCollection v)
+       (map-indexed (fn [idx _]
+                      (.valAt (mapstache renderer value lookup-key lookups root) idx))
+                    v)
+
+       (instance? String v)
+       (do
+         (if (= (.indexOf @lookups lookup-key) -1)
+           (do
+             (swap! lookups #(conj %1 lookup-key))
+             (let [ret (render renderer v root)]
+               (swap! lookups #(pop %1))
+               ret))
+           (throw
+            (IllegalArgumentException.
+             (circular-path-message (conj @lookups lookup-key))))))
        :else v)))
 
   IFn
@@ -66,7 +91,6 @@
                       (dissoc value k)
                       (update-in value cursor #(dissoc k)))]
       (mapstache renderer new-value cursor lookups root))))
-
 
 (defn mapstache
   ([renderer value]
