@@ -61,14 +61,14 @@
 
   IPersistentCollection
   (count [this] (count (get-in value cursor)))
-  (empty [this] (empty (count this)))
+  (empty [this] (empty? (get-in value cursor)))
   (equiv [this o]
     (let [my-value (get-in value cursor)]
       (if (instance? Mapstache o)
         (= my-value (get-in (.value o) (.cursor o)))
         (= my-value o))))
   (cons [this o]
-    (let [new-value (if (empty cursor)
+    (let [new-value (if (empty? cursor)
                       (conj value o)
                       (update-in value cursor conj o))]
       (mapstache renderer new-value cursor lookups root)))
@@ -82,7 +82,7 @@
       (assoc this k v)))
 
   (without [this k]
-    (let [new-value (if (empty cursor)
+    (let [new-value (if (empty? cursor)
                       (dissoc value k)
                       (update-in value cursor #(dissoc k)))]
       (mapstache renderer new-value cursor lookups root)))

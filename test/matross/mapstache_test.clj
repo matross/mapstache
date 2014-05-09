@@ -39,7 +39,11 @@
   (testing "I can conj elements onto it"
     (let [[m ms] (matching-maps {:a "value"})
           v [:b "other-value"]]
-      (is (= (conj ms v) (conj m v)))))
+      (is (= (conj ms v) (conj m v))))
+
+    (let [[m ms] (matching-maps {:a {:b "value"}})
+          v [:c "other-value"]]
+      (is (= (conj (:a ms) v) (conj (:a  m) v)))))
 
   (testing "I can assoc elements into it"
     (let [[m ms] (matching-maps {:a "value"})
