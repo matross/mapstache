@@ -12,8 +12,7 @@
   (mapstache
    (reify IRender
      (render [_ s d] (mustache/render s d)))
-   m
-))
+   m))
 
 (deftest behaves-like-a-map
   (testing "I can query it with a keyword."
