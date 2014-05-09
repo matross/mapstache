@@ -6,6 +6,7 @@
            clojure.lang.MapEntry
            clojure.lang.IPersistentCollection
            clojure.lang.IPersistentVector
+           clojure.lang.SeqIterator
 ))
 
 (declare mapstache)
@@ -91,7 +92,10 @@
     (let [new-value (if (empty cursor)
                       (dissoc value k)
                       (update-in value cursor #(dissoc k)))]
-      (mapstache renderer new-value cursor lookups root))))
+      (mapstache renderer new-value cursor lookups root)))
+
+  Iterable
+  (iterator [this] (SeqIterator. (seq this))))
 
 (defn mapstache
   ([renderer value]

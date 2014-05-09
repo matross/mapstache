@@ -50,7 +50,13 @@
   (testing "I can dissoc elements into it"
     (let [[m ms] (matching-maps {:a "value" :b "other-value"})
           k :b]
-      (is (= (dissoc ms k) (dissoc m k))))))
+      (is (= (dissoc ms k) (dissoc m k)))))
+
+  (testing "reduce-kv works as expected"
+    (let [[m ms] (matching-maps {:a "value" :b "more"})
+          reducer (fn [pr k v] (assoc pr v k))]
+      (is (= (reduce-kv reducer {}  ms)
+             (reduce-kv reducer {}  m))))))
 
 (deftest mapstache-behavior
   (testing "sub-maps are returned as Mapstache isntances"
