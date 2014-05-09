@@ -1,8 +1,8 @@
-(ns mapstache.core-test
+(ns matross.mapstache-test
   (:require [clojure.test :refer :all]
-            [mapstache.core :refer :all]
+            [matross.mapstache :refer :all]
             [clostache.parser :as mustache])
-  (:import mapstache.core.Mapstache
+  (:import matross.mapstache.Mapstache
            clojure.lang.MapEntry))
 
 (defn matching-maps [m]

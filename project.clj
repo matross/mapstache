@@ -1,6 +1,6 @@
-(defproject mapstache "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject matross.mapstache "0.1.0-SNAPSHOT"
+  :description "A specialized map impl that renders string values as templates."
+  :url "https://github.com/matross/mapstache"
   :license {:name "MIT"
             :url "http://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.5.1"]]

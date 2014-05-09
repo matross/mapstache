@@ -1,4 +1,4 @@
-(ns mapstache.core
+(ns matross.mapstache
   (:import clojure.lang.IFn
            clojure.lang.ILookup
            clojure.lang.IPersistentMap
@@ -19,7 +19,7 @@
             (map (fn [path] (clojure.string/join "." path)))
             (clojure.string/join " -> "))))
 
-(deftype Mapstache [^mapstache.core.IRender renderer
+(deftype Mapstache [^matross.mapstache.IRender renderer
                     ^IPersistentMap value
                     ^IPersistentVector cursor
                     ^IPersistentVector lookups
