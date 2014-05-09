@@ -56,7 +56,21 @@
     (let [[m ms] (matching-maps {:a "value" :b "more"})
           reducer (fn [pr k v] (assoc pr v k))]
       (is (= (reduce-kv reducer {}  ms)
-             (reduce-kv reducer {}  m))))))
+             (reduce-kv reducer {}  m)))))
+
+  (testing "I can check for the existence of a key"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (contains? ms :a))
+      (is (not (contains? ms :b)))))
+
+  (testing "I can retrieve all the keys"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (= (keys ms) (keys m)))))
+
+  (testing "I can retrieve all the vals"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (= (vals ms) (vals m)))))
+)
 
 (deftest mapstache-behavior
   (testing "sub-maps are returned as Mapstache isntances"
