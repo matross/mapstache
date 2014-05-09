@@ -6,8 +6,7 @@
            clojure.lang.MapEntry
            clojure.lang.IPersistentCollection
            clojure.lang.IPersistentVector
-           clojure.lang.SeqIterator
-))
+           clojure.lang.SeqIterator))
 
 (declare mapstache)
 
@@ -29,28 +28,25 @@
   (valAt [this k] (.valAt this k nil))
   (valAt [this k not-found]
     (let [lookup-key (conj cursor k)
-          v (get-in value (conj cursor k) not-found)
+          v (get-in value lookup-key not-found)
           root (or root this)]
       (cond
        (instance? IPersistentMap v)
        (mapstache renderer value lookup-key lookups root)
 
        (instance? IPersistentCollection v)
-       (map-indexed (fn [idx _]
-                      (.valAt (mapstache renderer value lookup-key lookups root) idx))
-                    v)
+       (map-indexed
+         (fn [idx _] (. (mapstache renderer value lookup-key lookups root) valAt idx)) v)
 
        (instance? String v)
-       (do
-         (if (= (.indexOf @lookups lookup-key) -1)
-           (do
-             (swap! lookups #(conj %1 lookup-key))
-             (try
-               (render renderer v root)
-               (finally (swap! lookups #(pop %1)))))
-           (throw
-            (IllegalArgumentException.
-             (circular-path-message (conj @lookups lookup-key))))))
+       (if (= (.indexOf @lookups lookup-key) -1)
+         (try
+           (swap! lookups #(conj %1 lookup-key))
+           (render renderer v root)
+           (finally (swap! lookups #(pop %1))))
+         (let [message (circular-path-message (conj @lookups lookup-key))]
+           (throw (IllegalArgumentException. message))))
+
        :else v)))
 
   IFn
@@ -64,20 +60,16 @@
 
   IPersistentCollection
   (count [this] (count (get-in value cursor)))
-  (empty [this] (empty (get-in value cursor)))
+  (empty [this] (empty (count this)))
   (equiv [this o]
     (let [my-value (get-in value cursor)]
       (if (instance? Mapstache o)
-        (= my-value
-           (get-in (.value o) (.cursor o)))
+        (= my-value (get-in (.value o) (.cursor o)))
         (= my-value o))))
   (cons [this o]
     (let [new-value (if (empty cursor)
                       (conj value o)
-                      (update-in value
-                          cursor
-                          (fn [v] (conj v o))))]
-
+                      (update-in value cursor conj o))]
       (mapstache renderer new-value cursor lookups root)))
 
   IPersistentMap
