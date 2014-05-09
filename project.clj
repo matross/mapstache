@@ -1,4 +1,4 @@
-(defproject matross.mapstache "0.1.0-SNAPSHOT"
+(defproject matross/mapstache "0.1.0-SNAPSHOT"
   :description "A specialized map impl that renders string values as templates."
   :url "https://github.com/matross/mapstache"
   :license {:name "MIT"
