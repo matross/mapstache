@@ -105,4 +105,7 @@
   (testing "toString doesn't blow out the stack"
     (let [ms (mustached {:x "{{y}}" :y {:a :b}})]
       (is (not (empty? (str (:x ms)))))))
-)
+
+  (testing "no-template flag is respected"
+    (let [[m ms] (matching-maps (no-template {:a "{{b}}" :b "c"}))]
+      (is (= (:a ms) (:a m))))))

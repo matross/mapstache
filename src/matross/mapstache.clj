@@ -20,6 +20,12 @@
             (map (fn [path] (clojure.string/join "." path)))
             (clojure.string/join " -> "))))
 
+(defn no-template [m]
+  (vary-meta m assoc :mapstache-no-template true))
+
+(defn no-template? [m]
+  (:mapstache-no-template (meta m)))
+
 (deftype Mapstache [^matross.mapstache.IRender renderer
                     ^IPersistentMap value
                     ^IPersistentVector cursor
@@ -31,24 +37,27 @@
     (let [lookup-key (conj cursor k)
           v (get-in value lookup-key not-found)
           root (or root this)]
-      (cond
-       (instance? IPersistentMap v)
-       (mapstache renderer value lookup-key lookups root)
 
-       (instance? IPersistentCollection v)
-       (map-indexed
-         (fn [idx _] (. (mapstache renderer value lookup-key lookups root) valAt idx)) v)
+      (if (no-template? v)
+        v
+        (cond
+         (instance? IPersistentMap v)
+         (mapstache renderer value lookup-key lookups root)
 
-       (instance? String v)
-       (if (= (.indexOf @lookups lookup-key) -1)
-         (try
-           (swap! lookups conj lookup-key)
-           (render renderer v root)
-           (finally (swap! lookups pop)))
-         (let [message (circular-path-message (conj @lookups lookup-key))]
-           (throw (IllegalArgumentException. message))))
+         (instance? IPersistentCollection v)
+         (map-indexed
+          (fn [idx _] (. (mapstache renderer value lookup-key lookups root) valAt idx)) v)
 
-       :else v)))
+         (instance? String v)
+         (if (= (.indexOf @lookups lookup-key) -1)
+           (try
+             (swap! lookups conj lookup-key)
+             (render renderer v root)
+             (finally (swap! lookups pop)))
+           (let [message (circular-path-message (conj @lookups lookup-key))]
+             (throw (IllegalArgumentException. message))))
+
+         :else v))))
 
   IFn
   (invoke [this k] (.valAt this k))
