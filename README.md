@@ -16,7 +16,7 @@ You can use Mapstache by including
 in your `project.clj` dependencies. It is avaliable for download via Clojars.
 
 _NOTE_: Mapstache does not provide a template engine. In order to use it,
-you must provide your own implementation of of `matross.mapstache/IRender`.
+you must provide your own implementation of `matross.mapstache/IRender`.
 
 An example with Clostache would look like:
 
