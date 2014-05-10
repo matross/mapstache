@@ -8,8 +8,7 @@
            clojure.lang.MapEntry
            clojure.lang.IPersistentCollection
            clojure.lang.IPersistentVector
-           clojure.lang.SeqIterator
-           java.util.Map))
+           clojure.lang.SeqIterator))
 
 (declare mapstache)
 
@@ -37,6 +36,7 @@
                     root]
 
   Associative
+  (containsKey [this k] (contains? (get-in value cursor) k))
   (entryAt [this k]
     (if (.containsKey this k)
       (MapEntry. k (get-in value (conj cursor k)))))
@@ -107,10 +107,7 @@
       (mapstache renderer new-value cursor lookups root)))
 
   Iterable
-  (iterator [this] (SeqIterator. (.seq this)))
-
-  Map
-  (containsKey [this k] (contains? (get-in value cursor) k)))
+  (iterator [this] (SeqIterator. (.seq this))))
 
 (defn mapstache
   ([renderer value]
