@@ -59,8 +59,7 @@ Using this config with Mapstache is no different than interacting with any other
 ```clj
 (def config (mapstached my-parsed-yaml))
 
-(println (:health_check_url config))
-_=> "http://example.com/my-app/health-check"_
+(:health_check_url config) ; "http://example.com/my-app/health-check"
 ```
 
 And that's it! As long as your config file can be parsed to a map, your only limitation is the expressiveness of your template engine.
