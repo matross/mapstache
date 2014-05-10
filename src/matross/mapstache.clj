@@ -1,5 +1,7 @@
 (ns matross.mapstache
-  (:import clojure.lang.IFn
+  (:import clojure.lang.Atom
+           clojure.lang.Associative
+           clojure.lang.IFn
            clojure.lang.ILookup
            clojure.lang.IPersistentMap
            clojure.lang.Seqable
@@ -29,8 +31,14 @@
 (deftype Mapstache [^matross.mapstache.IRender renderer
                     ^IPersistentMap value
                     ^IPersistentVector cursor
-                    ^IPersistentVector lookups
+                    ^Atom lookups
                     root]
+
+  Associative
+  (entryAt [this k]
+    (if (.containsKey this k)
+      (MapEntry. k (get-in value (conj cursor k)))))
+
   ILookup
   (valAt [this k] (.valAt this k nil))
   (valAt [this k not-found]
@@ -88,7 +96,7 @@
   (assocEx [this k v]
     (if (contains? k (get-in value cursor))
       (throw (IllegalArgumentException. (str "Already contains key: " k)))
-      (assoc this k v)))
+      (.assoc this k v)))
 
   (without [this k]
     (let [new-value (if (empty? cursor)
@@ -97,12 +105,10 @@
       (mapstache renderer new-value cursor lookups root)))
 
   Iterable
-  (iterator [this] (SeqIterator. (seq this)))
-
+  (iterator [this] (SeqIterator. (.seq this)))
 
   Map
-  (containsKey [this k] (contains? (get-in value cursor) k))
-)
+  (containsKey [this k] (contains? (get-in value cursor) k)))
 
 (defn mapstache
   ([renderer value]

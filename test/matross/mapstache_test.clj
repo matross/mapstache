@@ -74,7 +74,11 @@
   (testing "I can retrieve all the vals"
     (let [[m ms] (matching-maps {:a "value"})]
       (is (= (vals ms) (vals m)))))
-)
+
+  (testing "I can find keys"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (= (find ms :a) (find m :a)))
+      (is (= (find ms :not-a) (find m :not-a))))))
 
 (deftest mapstache-behavior
   (testing "sub-maps are returned as Mapstache isntances"
