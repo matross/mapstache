@@ -12,7 +12,7 @@
 
 (declare mapstache)
 
-(defprotocol IRender (render [_ str data]))
+(defprotocol IRender (render [this str data]))
 
 (defn no-template
   "Mark a Var as not templated to prevent mapstache from templating any values within it"
