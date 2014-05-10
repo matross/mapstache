@@ -13,12 +13,12 @@ You can use Mapstache by including
 [matross/mapstache "0.1.0-SNAPSHOT"]
 ```
 
-in your `project.clj` dependencies. It is avaliable for download via (Clojars)[https://clojars.org/matross/mapstache].
+in your `project.clj` dependencies. It is avaliable for download via [Clojars](https://clojars.org/matross/mapstache).
 
 **NOTE**: Mapstache does not provide a template engine. In order to use it,
 you must provide your own implementation of `matross.mapstache/IRender`.
 
-For example, using Mapstache with (Clostache)[https://github.com/fhd/clostache] would look similar to:
+For example, using Mapstache with [Clostache](https://github.com/fhd/clostache) would look similar to:
 
 ```clj
 (require '[matross.mapstache :refer [IRender mapstache]]
@@ -45,7 +45,7 @@ health_check_url: http://example.com/my-app/health-check
 ```
 
 Now, any sane developer would want to eliminate the data duplication in their configs. This is where Mapstache comes into play. By pairing
-Mapstache with a (mustache)[http://mustache.github.io/] template engine, as in our example above, we can rewrite our config to look like:
+Mapstache with a [mustache](http://mustache.github.io/) template engine, as in our example above, we can rewrite our config to look like:
 
 ```yaml
 ---
