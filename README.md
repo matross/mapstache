@@ -54,10 +54,10 @@ web_root: /my-app
 health_check_url: "{{base_url}}{{web_root}}/health-check"
 ```
 
-Using this config with Mapstache is no different than interacting with any other map, with one exception:
+Using this config with Mapstache and our mustache example above is no different than interacting with any other map, with one exception:
 
 ```clj
-(def config (mapstached my-parsed-yaml))
+(def config (mustached my-parsed-yaml))
 
 (:health_check_url config) ; "http://example.com/my-app/health-check"
 ```
