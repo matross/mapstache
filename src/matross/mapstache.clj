@@ -15,18 +15,20 @@
 
 (defprotocol IRender (render [_ str data]))
 
-(defn circular-path-message [p]
+(defn no-template
+  "Mark a Var as not templated to prevent mapstache from templating any values within it"
+  [m]
+  (vary-meta m assoc :mapstache-no-template true))
+
+(defn- no-template? [m] (:mapstache-no-template (meta m)))
+
+(defn- circular-path-message [p]
   (str "Circular key lookup: "
        (->> p
             (map (fn [path] (map name path)))
             (map (fn [path] (clojure.string/join "." path)))
             (clojure.string/join " -> "))))
 
-(defn no-template [m]
-  (vary-meta m assoc :mapstache-no-template true))
-
-(defn no-template? [m]
-  (:mapstache-no-template (meta m)))
 
 (deftype Mapstache [^matross.mapstache.IRender renderer
                     ^IPersistentMap value
