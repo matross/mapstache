@@ -55,8 +55,9 @@
          (mapstache renderer value lookup-key lookups root)
 
          (instance? IPersistentCollection v)
-         (map-indexed
-          (fn [idx _] (. (mapstache renderer value lookup-key lookups root) valAt idx)) v)
+         (let [new-ms (mapstache renderer value lookup-key lookups root)]
+           (map-indexed
+            (fn [idx _] (. new-ms valAt idx)) v))
 
          (instance? String v)
          (if (= (.indexOf @lookups lookup-key) -1)
