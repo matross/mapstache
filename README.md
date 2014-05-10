@@ -13,12 +13,12 @@ You can use Mapstache by including
 [matross/mapstache "0.1.0-SNAPSHOT"]
 ```
 
-in your `project.clj` dependencies. It is avaliable for download via Clojars.
+in your `project.clj` dependencies. It is avaliable for download via (Clojars)[https://clojars.org/matross/mapstache].
 
-_NOTE_: Mapstache does not provide a template engine. In order to use it,
+**NOTE**: Mapstache does not provide a template engine. In order to use it,
 you must provide your own implementation of `matross.mapstache/IRender`.
 
-An example with Clostache would look like:
+For example, using Mapstache with (Clostache)[https://github.com/fhd/clostache] would look similar to:
 
 ```clj
 (require `[[matross.mapstache :refer [IRender mapstache]]
@@ -32,6 +32,38 @@ An example with Clostache would look like:
 
 (mustached {:key "value" :other-key "{{key}}"})
 ```
+
+## Usage
+
+Mapstache is primarily focused on making end user configuration more expressive. So, let's start with an imaginary yaml configuration:
+
+```yaml
+---
+base_url: http://example.com
+web_root: /my-app
+health_check_url: http://example.com/my-app/health-check
+```
+
+Now, any sane developer would want to eliminate the data duplication in their configs. This is where Mapstache comes into play. By pairing
+Mapstache with a (mustache)[http://mustache.github.io/] template engine, as in our example above, we can rewrite our config to look like:
+
+```yaml
+---
+base_url: http://example.com
+web_root: /my-app
+health_check_url: "{{base_url}}{{web_root}}/health-check"
+```
+
+Using this config with Mapstache is no different than interacting with any other map, with one exception:
+
+```clj
+(def config (mapstached my-parsed-yaml))
+
+(println (:health_check_url config))
+_=> "http://example.com/my-app/health-check"_
+```
+
+And that's it! As long as your config file can be parsed to a map, your only limitation is the expressiveness of your template engine.
 
 ## License
 
