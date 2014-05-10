@@ -21,8 +21,8 @@ you must provide your own implementation of `matross.mapstache/IRender`.
 For example, using Mapstache with (Clostache)[https://github.com/fhd/clostache] would look similar to:
 
 ```clj
-(require `[[matross.mapstache :refer [IRender mapstache]]
-           [clostache.parser :as mustache]])
+(require '[matross.mapstache :refer [IRender mapstache]]
+         '[clostache.parser :as mustache])
 
 (defn mustached [m]
   (mapstache
