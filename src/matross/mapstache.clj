@@ -15,7 +15,7 @@
 (defprotocol IRender (render [this str data]))
 
 (defn no-template
-  "Mark a Var as not templated to prevent mapstache from templating any values within it"
+  "Mark a Var as 'do not template', preventing mapstache from templating any values within it."
   [m]
   (vary-meta m assoc :mapstache-no-template true))
 
