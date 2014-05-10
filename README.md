@@ -39,18 +39,18 @@ Mapstache is primarily focused on making end user configuration more expressive.
 
 ```yaml
 ---
-base_url: http://example.com
-web_root: /my-app
-health_check_url: http://example.com/my-app/health-check
+base_url: "http://example.com"
+web_root: "/my-app"
+health_check_url: "http://example.com/my-app/health-check"
 ```
 
-Now, any sane developer would want to eliminate the data duplication in their configs. This is where Mapstache comes into play. By pairing
-Mapstache with a [mustache](http://mustache.github.io/) template engine, as in our example above, we can rewrite our config to look like:
+Now, any sane developer would want to eliminate the data duplication in their configs. This is where Mapstache comes into play. If we were
+to pair Mapstache with a [mustache](http://mustache.github.io/) template engine, as in our example above, we can rewrite our config to look like:
 
 ```yaml
 ---
-base_url: http://example.com
-web_root: /my-app
+base_url: "http://example.com"
+web_root: "/my-app"
 health_check_url: "{{base_url}}{{web_root}}/health-check"
 ```
 
