@@ -81,7 +81,7 @@
 
   IPersistentCollection
   (count [this] (count (get-in value cursor)))
-  (empty [this] (empty? (get-in value cursor)))
+  (empty [this] (mapstache renderer {}))
   (equiv [this o]
     (let [my-value (get-in value cursor)]
       (if (instance? Mapstache o)
