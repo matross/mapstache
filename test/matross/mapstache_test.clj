@@ -110,6 +110,11 @@
     (let [ms (mustached {:x "{{y}}" :y {:a :b}})]
       (is (not (empty? (str (:x ms)))))))
 
+  ;; currently failing
+  (testing "can lookup across complex objects"
+    (let [ms (mustached {:x {:a "{{y.b}}"} :y {:a "{{x.a}}" :b 23}})]
+      (is (= 23 (get-in ms [:y :a])))))
+
   (testing "Values can be marked as 'no-template', disabling Mapstache's behavior"
     (let [[m ms] (matching-maps (no-template {:a "{{b}}" :b "c"}))]
       (is (= (:a ms) (:a m))))))
