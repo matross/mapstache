@@ -10,7 +10,7 @@ easily build new pieces of configuration data off of existing ones.
 You can use Mapstache by including
 
 ```clj
-[matross/mapstache "0.1.0"]
+[matross/mapstache "0.1.1"]
 ```
 
 in your `project.clj` dependencies. It is avaliable for download via [Clojars](https://clojars.org/matross/mapstache).
