@@ -9,5 +9,7 @@
                               [:name "Darrell Hamilton"]
                               [:url "https://github.com/zeroem"]]]
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :profiles {:dev {:dependencies [[de.ubercode.clostache/clostache "1.4.0"]]}}
+  :profiles {:dev {:dependencies [[stencil "0.3.3"]
+
+]}}
   :plugins [[codox "0.8.0"]])

@@ -1,7 +1,7 @@
 (ns matross.mapstache-test
   (:require [clojure.test :refer :all]
             [matross.mapstache :refer :all]
-            [clostache.parser :as mustache])
+            [stencil.core :as mustache])
   (:import matross.mapstache.Mapstache
            clojure.lang.MapEntry))
 
@@ -11,7 +11,7 @@
 (defn mustached [m]
   (mapstache
    (reify IRender
-     (render [_ s d] (mustache/render s d)))
+     (render [_ s d] (mustache/render-string s d)))
    m))
 
 (deftest behaves-like-a-map
@@ -110,10 +110,9 @@
     (let [ms (mustached {:x "{{y}}" :y {:a :b}})]
       (is (not (empty? (str (:x ms)))))))
 
-  ;; currently failing
   (testing "can lookup across complex objects"
     (let [ms (mustached {:x {:a "{{y.b}}"} :y {:a "{{x.a}}" :b 23}})]
-      (is (= 23 (get-in ms [:y :a])))))
+      (is (= "23" (get-in ms [:y :a])))))
 
   (testing "Values can be marked as 'no-template', disabling Mapstache's behavior"
     (let [[m ms] (matching-maps (no-template {:a "{{b}}" :b "c"}))]
