@@ -78,7 +78,16 @@
   (testing "I can call `find` on a Mapstache"
     (let [[m ms] (matching-maps {:a "value"})]
       (is (= (find ms :a) (find m :a)))
-      (is (= (find ms :not-a) (find m :not-a))))))
+      (is (= (find ms :not-a) (find m :not-a)))))
+
+  (testing "I can call `first` on a Mapstache"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (first ms))
+      (is (= (first ms) (first m)))))
+
+  (testing "I can call `rest` on a Mapstache"
+    (let [[m ms] (matching-maps {:a "value"})]
+      (is (= (rest ms) (rest m))))))
 
 (deftest mapstache-behavior
   (testing "Querying maps wraps the value in a Mapstache"
