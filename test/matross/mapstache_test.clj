@@ -125,7 +125,7 @@
 
   (testing "can select keys"
     (let [ms {:a "{{str}}" :str "value"}]
-      (is (= ms (select-keys ms (keys ms))))))
+      (is (= {:a "value"} (select-keys ms [:a])))))
 
   (testing "Values can be marked as 'no-template', disabling Mapstache's behavior"
     (let [[m ms] (matching-maps (no-template {:a "{{b}}" :b "c"}))]
