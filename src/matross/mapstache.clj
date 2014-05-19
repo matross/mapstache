@@ -39,7 +39,7 @@
   (containsKey [this k] (contains? (get-in value cursor) k))
   (entryAt [this k]
     (if (.containsKey this k)
-      (MapEntry. k (get-in value (conj cursor k)))))
+      (MapEntry. k (.valAt this k))))
 
   ILookup
   (valAt [this k] (.valAt this k nil))
