@@ -124,7 +124,7 @@
       (is (= "23" (get-in ms [:y :a])))))
 
   (testing "can select keys"
-    (let [ms {:a "{{str}}" :str "value"}]
+    (let [ms (mustached {:a "{{str}}" :str "value"})]
       (is (= {:a "value"} (select-keys ms [:a])))))
 
   (testing "Values can be marked as 'no-template', disabling Mapstache's behavior"
