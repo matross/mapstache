@@ -14,7 +14,5 @@
                   [:name "Thomas Omans"]
                   [:url "https://github.com/eggsby"]]]
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :profiles {:dev {:dependencies [[stencil "0.3.3"]
-
-]}}
+  :profiles {:dev {:dependencies [[stencil "0.3.3"]]}}
   :plugins [[codox "0.8.0"]])
