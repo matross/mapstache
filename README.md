@@ -1,21 +1,21 @@
 # Mapstache
 
-Mapstache is a specialized map implementation bent on making end user configuration
-files more expressive. Treating all string values as templates and rendering them
-before returning their value is it's defining feature. This allows end users to
-easily build new pieces of configuration data off of existing ones.
+Mapstache provides a specialized map implementation bent on making end user configuration
+files more expressive. All string values stored in the map will be rendered as templates before
+their value is returned. This provides a simple mechanism to reuse existing configuration data
+to build new values.
 
 ## Installation
 
 You can use Mapstache by including
 
 ```clj
-[matross/mapstache "0.1.0"]
+[matross/mapstache "0.2.0"]
 ```
 
 in your `project.clj` dependencies. It is avaliable for download via [Clojars](https://clojars.org/matross/mapstache).
 
-**NOTE**: Mapstache does not provide a template engine. In order to use it,
+**NOTE**: Mapstache does not provide an `IRender` (template engine) implementation. In order to use it,
 you must provide your own implementation of `matross.mapstache/IRender`.
 
 For example, if you wanted to use [Clostache](https://github.com/fhd/clostache) as your underlying renderer,
