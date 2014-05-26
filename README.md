@@ -18,17 +18,17 @@ in your `project.clj` dependencies. It is avaliable for download via [Clojars](h
 **NOTE**: Mapstache does not provide an `IRender` (template engine) implementation. In order to use it,
 you must provide your own implementation of `matross.mapstache/IRender`.
 
-For example, if you wanted to use [Clostache](https://github.com/fhd/clostache) as your underlying renderer,
+For example, if you wanted to use [Stencil](https://github.com/davidsantiago/stencil) as your underlying renderer,
 it might look something like:
 
 ```clj
 (require '[matross.mapstache :refer [IRender mapstache]]
-         '[clostache.parser :as mustache])
+          '[stencil.core :as stencil])
 
 (defn mustached [m]
   (mapstache
    (reify IRender
-     (render [_ s d] (mustache/render s d)))
+     (render [_ s d] (stencil/render-string s d)))
    m))
 
 (mustached {:key "value" :other-key "{{key}}"})
@@ -46,8 +46,7 @@ health_check_url: "http://example.com/my-app/health-check"
 ```
 
 Any sane developer would want to eliminate this data duplication. This is where Mapstache comes into play. Assuming
-we're using Clostache as described above, we could refactor our config using the [mustache](http://mustache.github.io/)
-template syntax:
+we're using Stencil as described above, we could refactor our config using the [mustache template syntax](http://mustache.github.io/):
 
 ```yaml
 ---
