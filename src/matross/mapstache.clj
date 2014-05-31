@@ -77,7 +77,8 @@
 
   Seqable
   (seq [this]
-    (map (fn [k] (MapEntry. k (.valAt this k))) (keys (get-in value cursor))))
+    (if-not (empty? (get-in value cursor))
+      (map (fn [k] (MapEntry. k (.valAt this k))) (keys (get-in value cursor)))))
 
   IPersistentCollection
   (count [this] (count (get-in value cursor)))
