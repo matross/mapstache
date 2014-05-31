@@ -15,6 +15,10 @@
    m))
 
 (deftest behaves-like-a-map
+  (testing "seq behaves properly"
+    (let [[m ms] (matching-maps {})]
+      (is (= (seq ms) (seq m)))))
+
   (testing "Calling a keyword function on a Mapstache works."
     (let [[m ms] (matching-maps {:a "value"})]
       (is (= (:a ms) (:a m)))
