@@ -1,4 +1,5 @@
 (ns matross.mapstache
+  (:require [potemkin :refer [def-map-type]])
   (:import clojure.lang.Atom
            clojure.lang.Associative
            clojure.lang.IFn
@@ -29,87 +30,49 @@
             (clojure.string/join " -> "))))
 
 
-(deftype Mapstache [^matross.mapstache.IRender renderer
-                    ^IPersistentMap value
-                    ^IPersistentVector cursor
-                    ^Atom lookups
-                    root]
+(def-map-type Mapstache [^matross.mapstache.IRender renderer
+                         ^IPersistentMap value
+                         ^IPersistentVector cursor
+                         ^Atom lookups
+                         root]
 
-  Associative
-  (containsKey [this k] (contains? (get-in value cursor) k))
-  (entryAt [this k]
-    (if (.containsKey this k)
-      (MapEntry. k (.valAt this k))))
+  (get [this k not-found]
+       (let [lookup-key (conj cursor k)
+             v (get-in value lookup-key not-found)
+             root (or root this)]
 
-  ILookup
-  (valAt [this k] (.valAt this k nil))
-  (valAt [this k not-found]
-    (let [lookup-key (conj cursor k)
-          v (get-in value lookup-key not-found)
-          root (or root this)]
+         (if (no-template? v)
+           v
+           (cond
+             (instance? IPersistentMap v)
+             (mapstache renderer value lookup-key lookups root)
 
-      (if (no-template? v)
-        v
-        (cond
-         (instance? IPersistentMap v)
-         (mapstache renderer value lookup-key lookups root)
+             (instance? IPersistentCollection v)
+             (let [new-ms (mapstache renderer value lookup-key lookups root)]
+               (map-indexed
+                 (fn [idx _] (. new-ms valAt idx)) v))
 
-         (instance? IPersistentCollection v)
-         (let [new-ms (mapstache renderer value lookup-key lookups root)]
-           (map-indexed
-            (fn [idx _] (. new-ms valAt idx)) v))
+             (instance? String v)
+             (if (= (.indexOf @lookups lookup-key) -1)
+               (try
+                 (swap! lookups conj lookup-key)
+                 (render renderer v root)
+                 (finally (swap! lookups pop)))
+               (let [message (circular-path-message (conj @lookups lookup-key))]
+                 (throw (IllegalArgumentException. message))))
 
-         (instance? String v)
-         (if (= (.indexOf @lookups lookup-key) -1)
-           (try
-             (swap! lookups conj lookup-key)
-             (render renderer v root)
-             (finally (swap! lookups pop)))
-           (let [message (circular-path-message (conj @lookups lookup-key))]
-             (throw (IllegalArgumentException. message))))
+             :else v))))
 
-         :else v))))
+  (assoc [_ k v]
+         (mapstache renderer (assoc-in value (conj cursor k) v) cursor lookups root))
 
-  IFn
-  (invoke [this k] (.valAt this k))
-  (invoke [this k not-found] (.valAt this k not-found))
-  (toString [this] (str [value cursor lookups]))
-
-  Seqable
-  (seq [this]
-    (if-not (empty? (get-in value cursor))
-      (map (fn [k] (MapEntry. k (.valAt this k))) (keys (get-in value cursor)))))
-
-  IPersistentCollection
-  (count [this] (count (get-in value cursor)))
-  (empty [this] (mapstache renderer (empty value)))
-  (equiv [this o]
-    (let [my-value (get-in value cursor)]
-      (if (instance? Mapstache o)
-        (= my-value (get-in (.value o) (.cursor o)))
-        (= my-value o))))
-  (cons [this o]
-    (let [new-value (if (empty? cursor)
-                      (conj value o)
-                      (update-in value cursor conj o))]
-      (mapstache renderer new-value cursor lookups root)))
-
-  IPersistentMap
-  (assoc [this k v]
-    (mapstache renderer (assoc-in value (conj cursor k) v) cursor lookups root))
-  (assocEx [this k v]
-    (if (contains? k (get-in value cursor))
-      (throw (IllegalArgumentException. (str "Already contains key: " k)))
-      (.assoc this k v)))
-
-  (without [this k]
+  (dissoc [_ k]
     (let [new-value (if (empty? cursor)
                       (dissoc value k)
                       (update-in value cursor dissoc k))]
       (mapstache renderer new-value cursor lookups root)))
 
-  Iterable
-  (iterator [this] (SeqIterator. (.seq this))))
+  (keys [_] (keys (get-in value cursor))))
 
 (defn mapstache
   ([renderer value]

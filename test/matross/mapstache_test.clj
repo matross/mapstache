@@ -37,8 +37,7 @@
     (let [[m ms] (matching-maps {:a "value"})]
       (is (= ms ms))
       (is (= ms m))
-      (is (not (= m ms)) "I can't make map know how to check a Mapstache")
-      (is (not (= ms "not a map")))))
+      (is (not= ms "not a map"))))
 
   (testing "I can conj an element onto a Mapstache."
     (let [[m ms] (matching-maps {:a "value"})

@@ -13,6 +13,7 @@
                   [:id "eggsby"]
                   [:name "Thomas Omans"]
                   [:url "https://github.com/eggsby"]]]
-  :dependencies [[org.clojure/clojure "1.5.1"]]
+  :dependencies [[org.clojure/clojure "1.5.1"]
+                 [potemkin  "0.3.4"]]
   :profiles {:dev {:dependencies [[stencil "0.3.3"]]}}
   :plugins [[codox "0.8.0"]])
