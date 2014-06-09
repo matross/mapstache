@@ -6,12 +6,15 @@
            clojure.lang.MapEntry))
 
 (defn matching-maps [m]
-  [m (mapstache (reify IRender (render [_ s d] s)) m)])
+  [m (mapstache (reify IRender
+                  (render [_ s d] s)
+                  (can-render? [_ v] (string? v))) m)])
 
 (defn mustached [m]
   (mapstache
    (reify IRender
-     (render [_ s d] (mustache/render-string s d)))
+     (render [_ s d] (mustache/render-string s d))
+     (can-render? [_ v] (string? v)))
    m))
 
 (deftest behaves-like-a-map
@@ -99,7 +102,9 @@
       (is (= (:a ms) (:a m)))))
 
   (testing "Querying Strings renders the value as a template"
-    (let [ms (mapstache (reify IRender (render [_ s d] 42)) {:a "{{str}}"})]
+    (let [ms (mapstache (reify IRender
+                          (render [_ s d] 42)
+                          (can-render? [_ v] true)) {:a "{{str}}"})]
       (is (= (:a ms) 42))))
 
   (testing "An actual template engine behaves properly"

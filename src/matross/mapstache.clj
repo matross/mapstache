@@ -13,7 +13,9 @@
 
 (declare mapstache)
 
-(defprotocol IRender (render [this str data]))
+(defprotocol IRender
+  (render [this template data])
+  (can-render? [this v]))
 
 (defn no-template
   "Mark a Var as 'do not template', preventing mapstache from templating any values within it."
@@ -44,15 +46,7 @@
          (if (no-template? v)
            v
            (cond
-             (instance? IPersistentMap v)
-             (mapstache renderer value lookup-key lookups root)
-
-             (instance? IPersistentCollection v)
-             (let [new-ms (mapstache renderer value lookup-key lookups root)]
-               (map-indexed
-                 (fn [idx _] (. new-ms valAt idx)) v))
-
-             (instance? String v)
+             (can-render? renderer v)
              (if (= (.indexOf @lookups lookup-key) -1)
                (try
                  (swap! lookups conj lookup-key)
@@ -60,6 +54,14 @@
                  (finally (swap! lookups pop)))
                (let [message (circular-path-message (conj @lookups lookup-key))]
                  (throw (IllegalArgumentException. message))))
+
+             (instance? IPersistentMap v)
+             (mapstache renderer value lookup-key lookups root)
+
+             (instance? IPersistentCollection v)
+             (let [new-ms (mapstache renderer value lookup-key lookups root)]
+               (map-indexed
+                 (fn [idx _] (. new-ms valAt idx)) v))
 
              :else v))))
 
