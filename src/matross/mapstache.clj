@@ -48,36 +48,37 @@
              v (get-in value lookup-key not-found)
              root (or root this)]
 
-         (if (no-template? v)
+         (cond
+           (no-template? v)
            v
-           (cond
-             (can-render? renderer v)
-             (if (= (.indexOf @lookups lookup-key) -1)
-               (try
-                 (swap! lookups conj lookup-key)
-                 (render renderer v root)
-                 (finally (swap! lookups pop)))
-               (let [message (circular-path-message (conj @lookups lookup-key))]
-                 (throw (IllegalArgumentException. message))))
 
-             (instance? IPersistentMap v)
-             (mapstache renderer value lookup-key lookups root)
+           (can-render? renderer v)
+           (if (= (.indexOf @lookups lookup-key) -1)
+             (try
+               (swap! lookups conj lookup-key)
+               (render renderer v root)
+               (finally (swap! lookups pop)))
+             (let [message (circular-path-message (conj @lookups lookup-key))]
+               (throw (IllegalArgumentException. message))))
 
-             (instance? IPersistentCollection v)
-             (let [new-ms (mapstache renderer value lookup-key lookups root)]
-               (map-indexed
-                 (fn [idx _] (. new-ms valAt idx)) v))
+           (instance? IPersistentMap v)
+           (mapstache renderer value lookup-key lookups root)
 
-             :else v))))
+           (instance? IPersistentCollection v)
+           (let [new-ms (mapstache renderer value lookup-key lookups root)]
+             (map-indexed
+               (fn [idx _] (. new-ms valAt idx)) v))
+
+           :else v)))
 
   (assoc [_ k v]
          (mapstache renderer (assoc-in value (conj cursor k) v) cursor lookups root))
 
   (dissoc [_ k]
-    (let [new-value (if (empty? cursor)
-                      (dissoc value k)
-                      (update-in value cursor dissoc k))]
-      (mapstache renderer new-value cursor lookups root)))
+          (let [new-value (if (empty? cursor)
+                            (dissoc value k)
+                            (update-in value cursor dissoc k))]
+            (mapstache renderer new-value cursor lookups root)))
 
   (keys [_] (keys (get-in value cursor))))
 
