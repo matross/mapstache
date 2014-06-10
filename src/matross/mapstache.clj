@@ -17,6 +17,11 @@
   (render [this template data])
   (can-render? [this v]))
 
+(defn string-renderer [f]
+  (reify IRender
+    (can-render? [_ v] (string? v))
+    (render [_ template data] (f template data))))
+
 (defn no-template
   "Mark a Var as 'do not template', preventing mapstache from templating any values within it."
   [m]

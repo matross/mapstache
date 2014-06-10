@@ -6,16 +6,10 @@
            clojure.lang.MapEntry))
 
 (defn matching-maps [m]
-  [m (mapstache (reify IRender
-                  (render [_ s d] s)
-                  (can-render? [_ v] (string? v))) m)])
+  [m (mapstache (string-renderer (fn [t d] t)) m)])
 
 (defn mustached [m]
-  (mapstache
-   (reify IRender
-     (render [_ s d] (mustache/render-string s d))
-     (can-render? [_ v] (string? v)))
-   m))
+  (mapstache (string-renderer #(mustache/render-string %1 %2)) m))
 
 (deftest behaves-like-a-map
   (testing "seq behaves properly"
