@@ -22,14 +22,12 @@ For example, if you wanted to use [Stencil](https://github.com/davidsantiago/ste
 it might look something like:
 
 ```clj
-(require '[matross.mapstache :refer [IRender mapstache]]
+(require '[matross.mapstache :refer [string-renderer mapstache]]
           '[stencil.core :as stencil])
 
 (defn mustached [m]
-  (mapstache
-   (reify IRender
-     (render [_ s d] (stencil/render-string s d)))
-   m))
+  (let [renderer (string-renderer stencil/render-string)]
+    (mapstache renderer m)))
 
 (mustached {:key "value" :other-key "{{key}}"})
 ```
