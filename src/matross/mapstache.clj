@@ -65,7 +65,7 @@
            (mapstache renderer value lookup-key lookups root)
 
            (instance? IPersistentCollection v)
-           (let [new-ms (mapstache renderer value lookup-key lookups root)]
+           (let [new-ms (mapstache renderer (update-in value lookup-key vec) lookup-key lookups root)]
              (map-indexed
                (fn [idx _] (. new-ms valAt idx)) v))
 
