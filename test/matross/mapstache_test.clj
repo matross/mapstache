@@ -125,6 +125,10 @@
     (let [ms (mustached {:x {:a "{{y.b}}"} :y {:a "{{x.a}}" :b 23}})]
       (is (= "23" (get-in ms [:y :a])))))
 
+  (testing "leaves lazy seqs intact"
+    (is (= 2 (last (:key {:key (range 3)})))) ;; normal map behavior
+    (is (= 2 (last (:key (mustached {:key (range 3)}))))))
+
   (testing "can select keys"
     (let [ms (mustached {:a "{{str}}" :str "value"})]
       (is (= {:a "value"} (select-keys ms [:a])))))
