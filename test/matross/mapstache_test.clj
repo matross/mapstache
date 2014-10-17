@@ -117,6 +117,10 @@
     (let [ms (mustached {:x "value" :y ["{{x}}" "value"]})]
       (is (= (:y ms) ["value" "value"]))))
 
+  (testing "Deeply traverses through vectors"
+    (let [ms (mustached {:x "value" :y [ {:x "{{x}}"} ["{{x}}"] ]})]
+      (is (= (:y ms) [{:x "value"} ["value"]]))))
+
   (testing "toString can render an instance of Mapstache to a string"
     (let [ms (mustached {:x "{{y}}" :y {:a :b}})]
       (is (not (empty? (str (:x ms)))))))
@@ -128,6 +132,9 @@
   (testing "can return lists properly"
     (is (= '(0 1 2) (:key {:key '(0 1 2)}))) ;; normal map behavior
     (is (= '(0 1 2) (:key (mustached {:key '(0 1 2)})))))
+
+  (testing "can be called multiple times"
+    (is (= '(0 1 2) (:key (mustached (mustached {:key '(0 1 2)}))))))
 
   (testing "can select keys"
     (let [ms (mustached {:a "{{str}}" :str "value"})]

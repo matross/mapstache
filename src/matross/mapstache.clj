@@ -64,10 +64,15 @@
            (instance? IPersistentMap v)
            (mapstache renderer value lookup-key lookups root)
 
-           (instance? IPersistentCollection v)
-           (let [new-ms (mapstache renderer (update-in value lookup-key vec) lookup-key lookups root)]
-             (map-indexed
-               (fn [idx _] (. new-ms valAt idx)) v))
+           (sequential? v)
+           (let [gen-render (fn gen* [cursor]
+                              (fn [idx x]
+                                (cond
+                                 (can-render? renderer x) (render renderer x root)
+                                 (instance? IPersistentMap x) (mapstache renderer value (conj cursor idx) lookups root)
+                                 (sequential? x) (map-indexed (gen* (conj cursor idx)) x)
+                                 :else x)))]
+             (map-indexed (gen-render lookup-key) v))
 
            :else v)))
 
