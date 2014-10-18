@@ -10,7 +10,7 @@ to build new values.
 You can use Mapstache by including
 
 ```clj
-[matross/mapstache "0.3.0"]
+[matross/mapstache "0.3.1"]
 ```
 
 in your `project.clj` dependencies. It is avaliable for download via [Clojars](https://clojars.org/matross/mapstache).
