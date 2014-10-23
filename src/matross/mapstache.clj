@@ -41,10 +41,10 @@
     (let [k (first ks)]
       (if (sequential? m)
         (if (and (>= k 0) (< k (count m)))
-          (recur (nth m k not-found) (rest ks) not-found)
+          (recur (nth m k) (rest ks) not-found)
           not-found)
         (if (contains? m k)
-          (recur (get m k not-found) (rest ks) not-found)
+          (recur (get m k) (rest ks) not-found)
           not-found)))
     m))
 
