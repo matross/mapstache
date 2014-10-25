@@ -36,6 +36,17 @@
             (map (fn [path] (clojure.string/join "." path)))
             (clojure.string/join " -> "))))
 
+(defn- type-aware-get-in [m ks not-found]
+  (if (not (empty? ks))
+    (let [k (first ks)]
+      (if (sequential? m)
+        (if (and (>= k 0) (< k (count m)))
+          (recur (nth m k) (rest ks) not-found)
+          not-found)
+        (if (contains? m k)
+          (recur (get m k) (rest ks) not-found)
+          not-found)))
+    m))
 
 (def-map-type Mapstache [^matross.mapstache.IRender renderer
                          ^IPersistentMap value
@@ -45,9 +56,8 @@
 
   (get [this k not-found]
        (let [lookup-key (conj cursor k)
-             v (get-in value lookup-key not-found)
+             v (type-aware-get-in value lookup-key not-found)
              root (or root this)]
-
          (cond
            (no-template? v)
            v
@@ -64,15 +74,10 @@
            (instance? IPersistentMap v)
            (mapstache renderer value lookup-key lookups root)
 
-           (sequential? v)
-           (let [gen-render (fn gen* [cursor]
-                              (fn [idx x]
-                                (cond
-                                 (can-render? renderer x) (render renderer x root)
-                                 (instance? IPersistentMap x) (mapstache renderer value (conj cursor idx) lookups root)
-                                 (sequential? x) (map-indexed (gen* (conj cursor idx)) x)
-                                 :else x)))]
-             (map-indexed (gen-render lookup-key) v))
+           (instance? IPersistentCollection v)
+             (let [new-ms (mapstache renderer (update-in value lookup-key vec) lookup-key lookups root)]
+               (map-indexed
+                 (fn [idx _] (get new-ms idx)) v))
 
            :else v)))
 

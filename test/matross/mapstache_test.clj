@@ -9,7 +9,7 @@
   [m (mapstache (string-renderer (fn [t d] t)) m)])
 
 (defn mustached [m]
-  (mapstache (string-renderer #(mustache/render-string %1 %2)) m))
+  (mapstache (string-renderer (fn [t d] (mustache/render-string t d))) m))
 
 (deftest behaves-like-a-map
   (testing "seq behaves properly"
@@ -102,16 +102,16 @@
       (is (= (:a ms) 42))))
 
   (testing "An actual template engine behaves properly"
-      (let [ms (mustached {:a "{{str}}" :str "value"})]
-        (is (= (:a ms) "value"))))
+    (let [ms (mustached {:a "{{str}}" :str "value"})]
+      (is (= (:a ms) "value"))))
 
   (testing "Values in a map get resolved properly"
     (let [ms (mustached {:a "{{b.str}}" :b {:str "value"}})]
-        (is (= (:a ms) "value"))))
+      (is (= (:a ms) "value"))))
 
   (testing "Recursive key lookups throw an exception instead of deadlocking"
     (let [ms (mustached {:a "{{b.c}}" :b {:c "{{a}}"}})]
-        (is (thrown? IllegalArgumentException (:a ms) "value"))))
+      (is (thrown? IllegalArgumentException (:a ms) "value"))))
 
   (testing "Vector elements get individually evaluated before being returned"
     (let [ms (mustached {:x "value" :y ["{{x}}" "value"]})]
@@ -129,17 +129,17 @@
     (let [ms (mustached {:x {:a "{{y.b}}"} :y {:a "{{x.a}}" :b 23}})]
       (is (= "23" (get-in ms [:y :a])))))
 
-  (testing "can return lists properly"
-    (is (= '(0 1 2) (:key {:key '(0 1 2)}))) ;; normal map behavior
-    (is (= '(0 1 2) (:key (mustached {:key '(0 1 2)})))))
-
-  (testing "can be called multiple times"
-    (is (= '(0 1 2) (:key (mustached (mustached {:key '(0 1 2)}))))))
-
   (testing "can select keys"
     (let [ms (mustached {:a "{{str}}" :str "value"})]
       (is (= {:a "value"} (select-keys ms [:a])))))
 
   (testing "Values can be marked as 'no-template', disabling Mapstache's behavior"
     (let [[m ms] (matching-maps (no-template {:a "{{b}}" :b "c"}))]
-      (is (= (:a ms) (:a m))))))
+      (is (= (:a ms) (:a m)))))
+  
+   (testing "can return lists properly"
+    (is (= '(0 1 2) (:key {:key '(0 1 2)}))) ;; normal map behavior
+    (is (= '(0 1 2) (:key (mustached {:key '(0 1 2)})))))
+
+  (testing "can be nested multiple times"
+    (is (= '(0 1 2) (:key (mustached (mustached {:key [0 1 2]}))))))) 
