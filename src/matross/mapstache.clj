@@ -76,8 +76,8 @@
 
            (instance? IPersistentCollection v)
              (let [new-ms (mapstache renderer (update-in value lookup-key vec) lookup-key lookups root)]
-               (map-indexed
-                 (fn [idx _] (get new-ms idx)) v))
+               (into [] (map-indexed
+                 (fn [idx _] (get new-ms idx)) v)))
 
            :else v)))
 

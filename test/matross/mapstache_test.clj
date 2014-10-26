@@ -21,6 +21,12 @@
       (is (= (:a ms) (:a m)))
       (is (= (:not-a ms) (:not-a m)))))
 
+  (testing "Supports get-in."
+    (let [m {:a [:b]}
+          m* (mustached m)
+          ks [:a 0]]
+      (is (= (get-in m ks) (get-in m* ks)))))
+
   (testing "Using a Mapstache as a function works."
     (let [[m ms] (matching-maps {:a "value"})]
       (is (= (ms :a) (m :a)))
