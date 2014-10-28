@@ -87,7 +87,17 @@
 
   (testing "I can call `rest` on a Mapstache"
     (let [[m ms] (matching-maps {:a "value"})]
-      (is (= (rest ms) (rest m))))))
+      (is (= (rest ms) (rest m)))))
+  (testing "get-in behaves like it does on a normal map"
+    (let [[m ms] (matching-maps {:a '(1 2 3)})]
+      (is (= (get-in ms [:a 1]) (get-in m [:a 1])))
+      (is (= (get-in ms [:a 10]) (get-in m [:a 10]))))
+    (let [[m ms] (matching-maps {:a [1 2 3]})]
+      (is (= (get-in ms [:a 10]) (get-in m [:a 10])))
+      (is (= (get-in ms [:a 1]) (get-in m [:a 1]))))
+    (let [[m ms] (matching-maps {:a #{1 2 3}})]
+      (is (= (get-in ms [:a 10]) (get-in m [:a 10])))
+      (is (= (get-in ms [:a 1]) (get-in m [:a 1])))) ))
 
 (deftest mapstache-behavior
   (testing "Querying maps wraps the value in a Mapstache"
