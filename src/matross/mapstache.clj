@@ -53,7 +53,6 @@
                          ^IPersistentVector cursor
                          ^Atom lookups
                          root]
-
   (get [this k not-found]
        (let [lookup-key (conj cursor k)
              v (type-aware-get-in value lookup-key not-found)
@@ -75,9 +74,12 @@
            (mapstache renderer value lookup-key lookups root)
 
            (instance? IPersistentCollection v)
-             (let [new-ms (mapstache renderer (update-in value lookup-key vec) lookup-key lookups root)]
-               (map-indexed
-                 (fn [idx _] (get new-ms idx)) v))
+           (let [new-ms (mapstache renderer value lookup-key lookups root)
+                 new-value (map (fn [idx] (get new-ms idx)) (range (count v)))]
+             (cond
+               (vector? v) (vec new-value)
+               (set? v) (set new-value)
+               :else new-value))
 
            :else v)))
 
@@ -94,6 +96,6 @@
 
 (defn mapstache
   ([renderer value]
-     (mapstache renderer value [] (atom []) nil))
+   (mapstache renderer value [] (atom []) nil))
   ([renderer value cursor lookups root]
-     (Mapstache. renderer value cursor lookups root)))
+   (Mapstache. renderer value cursor lookups root)))
