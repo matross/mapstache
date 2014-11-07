@@ -142,4 +142,5 @@
     (is (= '(0 1 2) (:key (mustached {:key '(0 1 2)})))))
 
   (testing "can be nested multiple times"
-    (is (= '(0 1 2) (:key (mustached (mustached {:key [0 1 2]}))))))) 
+    (let [[m ms] (matching-maps {:a {:b [{:x :y}]}})]
+      (is (= (mustached ms) m)))))
